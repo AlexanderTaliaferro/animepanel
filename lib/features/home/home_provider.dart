@@ -14,12 +14,14 @@ class HomeState {
   final HomeStatus status;
   final List<PanelImage> images;
   final String query;
+  final List<String> selectedTags;
   final String? errorMessage;
 
   const HomeState({
     this.status = HomeStatus.idle,
     this.images = const [],
     this.query = '',
+    this.selectedTags = const [],
     this.errorMessage,
   });
 
@@ -27,12 +29,14 @@ class HomeState {
     HomeStatus? status,
     List<PanelImage>? images,
     String? query,
+    List<String>? selectedTags,
     String? errorMessage,
   }) =>
       HomeState(
         status: status ?? this.status,
         images: images ?? this.images,
         query: query ?? this.query,
+        selectedTags: selectedTags ?? this.selectedTags,
         errorMessage: errorMessage ?? this.errorMessage,
       );
 }
@@ -62,8 +66,37 @@ class HomeNotifier extends _$HomeNotifier {
   /// Applies a tag chip directly (no debounce)
   void applyTag(String slug) {
     _debounce?.cancel();
-    state = state.copyWith(status: HomeStatus.loading, query: slug);
-    _search(slug);
+
+    // Add tag to selected tags if not already present
+    if (!state.selectedTags.contains(slug)) {
+      final updatedTags = [...state.selectedTags, slug];
+      final combinedQuery = updatedTags.join(' ');
+      state = state.copyWith(
+        status: HomeStatus.loading,
+        selectedTags: updatedTags,
+        query: combinedQuery,
+      );
+      _search(combinedQuery);
+    }
+  }
+
+  /// Removes a selected tag
+  void removeTag(String slug) {
+    _debounce?.cancel();
+
+    final updatedTags = state.selectedTags.where((tag) => tag != slug).toList();
+
+    if (updatedTags.isEmpty) {
+      state = const HomeState();
+    } else {
+      final combinedQuery = updatedTags.join(' ');
+      state = state.copyWith(
+        status: HomeStatus.loading,
+        selectedTags: updatedTags,
+        query: combinedQuery,
+      );
+      _search(combinedQuery);
+    }
   }
 
   Future<void> _search(String query) async {
@@ -102,6 +135,11 @@ class HomeNotifier extends _$HomeNotifier {
   }
 
   void clear() {
+    _debounce?.cancel();
+    state = const HomeState();
+  }
+
+  void clearAllTags() {
     _debounce?.cancel();
     state = const HomeState();
   }

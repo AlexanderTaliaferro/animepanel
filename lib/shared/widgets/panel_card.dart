@@ -38,11 +38,11 @@ class _PanelCardState extends State<PanelCard> {
             CachedNetworkImage(
               imageUrl: widget.image.thumbnailUrl,
               fit: BoxFit.cover,
-              placeholder: (_, __) => Container(color: Colors.grey.shade200),
+              placeholder: (_, __) => Container(color: MyColors.darkBlue),
               errorWidget: (_, __, ___) => Container(
-                color: Colors.grey.shade200,
-                child:
-                    const Icon(Icons.broken_image_outlined, color: Colors.grey),
+                color: MyColors.darkBlue,
+                child: Icon(Icons.broken_image_outlined,
+                    color: MyColors.accentOrange.withOpacity(0.5)),
               ),
             ),
 

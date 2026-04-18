@@ -29,9 +29,11 @@ class MyColors {
   late Color shadow = _shadow();
 
   // Static anime/manga theme colors
-  static Color animeBlue = const Color(0xFF6366F1); // Indigo
-  static Color mangaPink = const Color(0xFFEC4899); // Pink
-  static Color accentOrange = const Color(0xFFF59E0B); // Amber
+  static Color darkBlue = const Color(0xFF0A1628); // Dark blue panels
+  static Color accentOrange = const Color(0xFFFF9500); // Orange highlights
+  static Color accentBlue =
+      const Color.fromARGB(255, 75, 189, 212); // Light blue text/icons
+  static Color pureBlack = const Color(0xFF000000); // Black background
 
   // Base theme getters
   Color _primary() => Theme.of(context).colorScheme.primary;
@@ -48,58 +50,30 @@ class MyColors {
 
   // Custom color implementations
   Color _searchBarFill() {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return const Color(0xFF2A2A3C); // Dark purple-gray
-    } else {
-      return const Color(0xFFF3F4F6); // Light gray
-    }
+    return const Color(0xFF0A1628); // Dark blue
   }
 
   Color _tagChipBackground() {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return const Color(0xFF374151); // Dark gray
-    } else {
-      return const Color(0xFFE5E7EB); // Light gray
-    }
+    return const Color(0xFF0A1628); // Dark blue
   }
 
   Color _cardOverlay() {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return Colors.black.withOpacity(0.6);
-    } else {
-      return Colors.black.withOpacity(0.5);
-    }
+    return const Color(0xFF0A1628).withOpacity(0.85); // Dark blue overlay
   }
 
   Color _successColor() {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return const Color(0xFF10B981); // Bright green
-    } else {
-      return const Color(0xFF059669); // Deep green
-    }
+    return const Color(0xFFFF9500); // Orange highlight
   }
 
   Color _errorColor() {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return const Color(0xFFEF4444); // Bright red
-    } else {
-      return const Color(0xFFDC2626); // Deep red
-    }
+    return const Color(0xFFFF6B6B); // Soft red for errors
   }
 
   Color _displayColor() {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return Colors.white;
-    } else {
-      return Colors.black;
-    }
+    return Colors.white; // White text on black background
   }
 
   Color _reverseDisplayColor() {
-    if (Theme.of(context).brightness == Brightness.dark) {
-      return Colors.black;
-    } else {
-      return Colors.white;
-    }
+    return Colors.black;
   }
 }

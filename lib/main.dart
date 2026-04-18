@@ -14,18 +14,15 @@ class PanelReactApp extends StatelessWidget {
     return MaterialApp(
       title: 'PanelReact',
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.dark,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1), // indigo
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
+          seedColor: const Color(0xFFFF9500), // Orange
           brightness: Brightness.dark,
+          surface: const Color(0xFF000000), // Black
+          surfaceContainer: const Color(0xFF0A1628), // Dark blue
         ),
+        scaffoldBackgroundColor: const Color(0xFF000000), // Black
         useMaterial3: true,
       ),
       home: const HomeScreen(),

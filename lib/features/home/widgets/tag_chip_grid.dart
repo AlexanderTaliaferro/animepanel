@@ -60,6 +60,7 @@ class _TagChip extends StatelessWidget {
       onPressed: () => onTap(tag.slug),
       padding: const EdgeInsets.symmetric(horizontal: 4),
       backgroundColor: colors.tagChipBackground,
+      side: BorderSide(color: MyColors.accentBlue, width: 1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     );
   }

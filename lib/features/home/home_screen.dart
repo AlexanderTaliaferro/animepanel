@@ -6,6 +6,7 @@ import 'home_provider.dart';
 import 'widgets/tag_chip_grid.dart';
 import 'widgets/panel_grid.dart';
 import 'widgets/search_bar_widget.dart';
+import 'widgets/selected_tags_widget.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -27,33 +28,58 @@ class HomeScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // App title (hidden once search is active)
-                  if (state.status == HomeStatus.idle) ...[
-                    Text(
-                      '🎌 PanelReact',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: colors.displayColor,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Anime & manga reaction panels',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                  ],
-
                   // Search bar
                   SearchBarWidget(
                     initialValue: state.query,
                     onChanged: notifier.onQueryChanged,
                     onClear: notifier.clear,
                   ),
+
+                  // Selected tags
+                  SelectedTagsWidget(
+                    selectedTags: state.selectedTags,
+                    onRemoveTag: notifier.removeTag,
+                  ),
+
+                  // App logo and title (hidden once search is active)
+                  if (state.status == HomeStatus.idle) ...[
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/AnimePanelLogo.png',
+                            height: 80,
+                            fit: BoxFit.contain,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Anime Panel',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: MyColors.accentOrange,
+                                ),
+                              ),
+                              Text(
+                                'Anime Frames & Manga Panels\nReaction Library',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                                textAlign: TextAlign.start,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -86,7 +112,11 @@ class HomeScreen extends ConsumerWidget {
         );
 
       case HomeStatus.loading:
-        return const Center(child: CircularProgressIndicator());
+        return Center(
+          child: CircularProgressIndicator(
+            color: MyColors.accentOrange,
+          ),
+        );
 
       case HomeStatus.results:
         return PanelGrid(
@@ -111,21 +141,28 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.query});
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.image_not_supported_outlined,
-                size: 48, color: Colors.grey),
-            const SizedBox(height: 12),
-            Text('No panels for "$query"',
-                style: const TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 4),
-            const Text('Try a different emotion or character',
-                style: TextStyle(color: Colors.grey, fontSize: 13)),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) {
+    final colors = MyColors(context);
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.image_not_supported_outlined,
+              size: 48, color: colors.onSurfaceVariant),
+          const SizedBox(height: 12),
+          Text('No panels for "$query"',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: colors.displayColor,
+              )),
+          const SizedBox(height: 4),
+          Text('Try a different emotion or character',
+              style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13)),
+        ],
+      ),
+    );
+  }
 }
 
 class _ErrorState extends StatelessWidget {
@@ -133,16 +170,20 @@ class _ErrorState extends StatelessWidget {
   const _ErrorState({required this.message});
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.wifi_off_rounded, size: 48, color: Colors.orange),
-            const SizedBox(height: 12),
-            Text(message,
-                style: const TextStyle(fontSize: 13),
-                textAlign: TextAlign.center),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) {
+    final colors = MyColors(context);
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded, size: 48, color: MyColors.accentOrange),
+          const SizedBox(height: 12),
+          Text(message,
+              style: TextStyle(fontSize: 13, color: colors.displayColor),
+              textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
 }
