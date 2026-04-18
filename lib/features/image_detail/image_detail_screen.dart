@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:super_clipboard/super_clipboard.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import '../../core/models/panel_image.dart';
 import '../../core/api/anime_panel_api.dart';
 import '../../theme/my_colors.dart';
@@ -17,6 +20,7 @@ class ImageDetailScreen extends ConsumerStatefulWidget {
 
 class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
   bool _copied = false;
+  bool _sharing = false;
   late PanelImage _image;
 
   @override
@@ -48,6 +52,40 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
           const SnackBar(content: Text('Failed to copy image')),
         );
       }
+    }
+  }
+
+  Future<void> _handleShare() async {
+    setState(() => _sharing = true);
+    try {
+      final bytes =
+          await AnimePanelApi.instance.downloadImageBytes(_image.imageUrl);
+
+      // Save to temporary file
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/panel_${_image.id}.png');
+      await file.writeAsBytes(bytes);
+
+      // Get the share button position for iPad popover
+      final box = context.findRenderObject() as RenderBox?;
+      final sharePositionOrigin = box != null
+          ? box.localToGlobal(Offset.zero) & box.size
+          : null;
+
+      // Share using native share sheet
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'From ${_image.sourceTitle}',
+        sharePositionOrigin: sharePositionOrigin,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to share image')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sharing = false);
     }
   }
 
@@ -195,22 +233,11 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
                   const SizedBox(height: 20),
                 ],
 
-                // Download button
+                // Share button
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () async {
-                      // Open URL in browser
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Image URL: ${_image.imageUrl}'),
-                          action: SnackBarAction(
-                            label: 'OK',
-                            onPressed: () {},
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: _sharing ? null : _handleShare,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: MyColors.accentOrange,
                       side: BorderSide(
@@ -220,10 +247,19 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    icon: const Icon(Icons.download, size: 20),
-                    label: const Text(
-                      'View Full Image',
-                      style: TextStyle(fontSize: 16),
+                    icon: _sharing
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: MyColors.accentOrange,
+                            ),
+                          )
+                        : const Icon(Icons.share, size: 20),
+                    label: Text(
+                      _sharing ? 'Preparing...' : 'Share Image',
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
