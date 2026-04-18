@@ -68,9 +68,8 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
 
       // Get the share button position for iPad popover
       final box = context.findRenderObject() as RenderBox?;
-      final sharePositionOrigin = box != null
-          ? box.localToGlobal(Offset.zero) & box.size
-          : null;
+      final sharePositionOrigin =
+          box != null ? box.localToGlobal(Offset.zero) & box.size : null;
 
       // Share using native share sheet
       await Share.shareXFiles(
