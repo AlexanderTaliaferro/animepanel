@@ -4,7 +4,7 @@ import '../../../shared/widgets/panel_card.dart';
 
 class PanelGrid extends StatelessWidget {
   final List<PanelImage> images;
-  final Future<void> Function(PanelImage) onTap;
+  final void Function(PanelImage) onTap;
 
   const PanelGrid({super.key, required this.images, required this.onTap});
 

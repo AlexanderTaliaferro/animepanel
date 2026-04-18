@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:super_clipboard/super_clipboard.dart';
 import '../../core/api/anime_panel_api.dart';
 import '../../core/models/panel_image.dart';
 
@@ -113,24 +112,6 @@ class HomeNotifier extends _$HomeNotifier {
         status: HomeStatus.error,
         errorMessage: 'Search failed — check your connection.',
       );
-    }
-  }
-
-  /// Copy image to clipboard and fire copy-tracking
-  Future<void> copyImage(PanelImage image) async {
-    try {
-      final bytes =
-          await AnimePanelApi.instance.downloadImageBytes(image.imageUrl);
-
-      // Write image bytes to clipboard using super_clipboard
-      final item = DataWriterItem();
-      item.add(Formats.png(bytes)); // or Formats.jpeg
-      await SystemClipboard.instance?.write([item]);
-
-      // Track copy for trending algorithm
-      await AnimePanelApi.instance.recordCopy(image.id);
-    } catch (_) {
-      // Silently fail copy — consider showing a snackbar in the UI layer
     }
   }
 

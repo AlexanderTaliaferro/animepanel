@@ -3,32 +3,18 @@ import 'package:flutter/material.dart';
 import '../../core/models/panel_image.dart';
 import '../../theme/my_colors.dart';
 
-class PanelCard extends StatefulWidget {
+class PanelCard extends StatelessWidget {
   final PanelImage image;
   final VoidCallback onTap;
 
   const PanelCard({super.key, required this.image, required this.onTap});
 
   @override
-  State<PanelCard> createState() => _PanelCardState();
-}
-
-class _PanelCardState extends State<PanelCard> {
-  bool _copied = false;
-
-  Future<void> _handleTap() async {
-    widget.onTap();
-    setState(() => _copied = true);
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) setState(() => _copied = false);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final colors = MyColors(context);
 
     return GestureDetector(
-      onTap: _handleTap,
+      onTap: onTap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Stack(
@@ -36,7 +22,7 @@ class _PanelCardState extends State<PanelCard> {
           children: [
             // Image
             CachedNetworkImage(
-              imageUrl: widget.image.thumbnailUrl,
+              imageUrl: image.thumbnailUrl,
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(color: MyColors.darkBlue),
               errorWidget: (_, __, ___) => Container(
@@ -47,7 +33,7 @@ class _PanelCardState extends State<PanelCard> {
             ),
 
             // Source badge
-            if (widget.image.sourceTitle.isNotEmpty)
+            if (image.sourceTitle.isNotEmpty)
               Positioned(
                 left: 0,
                 right: 0,
@@ -57,7 +43,7 @@ class _PanelCardState extends State<PanelCard> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   child: Text(
-                    widget.image.sourceTitle,
+                    image.sourceTitle,
                     style: TextStyle(
                         color: colors.reverseDisplayColor, fontSize: 9),
                     maxLines: 1,
@@ -65,29 +51,6 @@ class _PanelCardState extends State<PanelCard> {
                   ),
                 ),
               ),
-
-            // "Copied!" overlay
-            AnimatedOpacity(
-              opacity: _copied ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: Container(
-                color: colors.cardOverlay,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.check_circle,
-                        color: colors.successColor, size: 28),
-                    const SizedBox(height: 4),
-                    Text('Copied!',
-                        style: TextStyle(
-                          color: colors.reverseDisplayColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        )),
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants.dart';
 import '../../theme/my_colors.dart';
+import '../image_detail/image_detail_screen.dart';
 import 'home_provider.dart';
 import 'widgets/tag_chip_grid.dart';
 import 'widgets/panel_grid.dart';
@@ -121,7 +122,13 @@ class HomeScreen extends ConsumerWidget {
       case HomeStatus.results:
         return PanelGrid(
           images: state.images,
-          onTap: notifier.copyImage,
+          onTap: (image) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ImageDetailScreen(image: image),
+              ),
+            );
+          },
         );
 
       case HomeStatus.empty:
