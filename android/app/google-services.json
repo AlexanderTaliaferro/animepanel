@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "87792941400",
+    "project_id": "animepanel",
+    "storage_bucket": "animepanel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:87792941400:android:6415cd1c0ce52d05d50d2d",
+        "android_client_info": {
+          "package_name": "com.taliaferrotech.animepanel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCLgiA5t_f-H7pEEqQR1rAV5Fec8T0ENw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

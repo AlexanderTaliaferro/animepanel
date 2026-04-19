@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../core/constants.dart';
+import '../../../core/models/promoted_tag.dart';
 import '../../../theme/my_colors.dart';
-import '../../../core/api/anime_panel_api.dart';
 
-/// Displays popular reaction tags as square image previews
-class TagChipGrid extends StatefulWidget {
-  final List<TagSuggestion> tags;
+/// Displays promoted reaction tags as square image previews
+class TagChipGrid extends StatelessWidget {
+  final List<PromotedTag> tags;
   final ValueChanged<String> onTagSelected;
 
   const TagChipGrid({
@@ -14,37 +13,6 @@ class TagChipGrid extends StatefulWidget {
     required this.tags,
     required this.onTagSelected,
   });
-
-  @override
-  State<TagChipGrid> createState() => _TagChipGridState();
-}
-
-class _TagChipGridState extends State<TagChipGrid> {
-  final Map<String, String> _tagImages = {};
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTagImages();
-  }
-
-  Future<void> _loadTagImages() async {
-    // Fetch the first image for each tag
-    for (final tag in widget.tags) {
-      try {
-        final results = await AnimePanelApi.instance.search(tag.slug);
-        if (results.isNotEmpty) {
-          _tagImages[tag.slug] = results.first.thumbnailUrl;
-        }
-      } catch (_) {
-        // Skip if fetch fails
-      }
-    }
-    if (mounted) {
-      setState(() => _isLoading = false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +41,12 @@ class _TagChipGridState extends State<TagChipGrid> {
               mainAxisSpacing: 12,
               childAspectRatio: 1.0,
             ),
-            itemCount: widget.tags.length,
+            itemCount: tags.length,
             itemBuilder: (context, index) {
-              final tag = widget.tags[index];
-              final imageUrl = _tagImages[tag.slug];
+              final tag = tags[index];
               return _TagPreviewCard(
                 tag: tag,
-                imageUrl: imageUrl,
-                isLoading: _isLoading,
-                onTap: () => widget.onTagSelected(tag.slug),
+                onTap: () => onTagSelected(tag.tagSlug),
               );
             },
           ),
@@ -92,15 +57,11 @@ class _TagChipGridState extends State<TagChipGrid> {
 }
 
 class _TagPreviewCard extends StatelessWidget {
-  final TagSuggestion tag;
-  final String? imageUrl;
-  final bool isLoading;
+  final PromotedTag tag;
   final VoidCallback onTap;
 
   const _TagPreviewCard({
     required this.tag,
-    required this.imageUrl,
-    required this.isLoading,
     required this.onTap,
   });
 
@@ -121,10 +82,10 @@ class _TagPreviewCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Background image
-              if (imageUrl != null && !isLoading)
+              // Background image from Firestore
+              if (tag.previewImageUrl != null)
                 CachedNetworkImage(
-                  imageUrl: imageUrl!,
+                  imageUrl: tag.previewImageUrl!,
                   fit: BoxFit.cover,
                   placeholder: (_, __) => Container(
                     color: MyColors.darkBlue,
@@ -136,18 +97,6 @@ class _TagPreviewCard extends StatelessWidget {
               else
                 Container(
                   color: MyColors.darkBlue,
-                  child: isLoading
-                      ? Center(
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: MyColors.accentOrange.withOpacity(0.5),
-                            ),
-                          ),
-                        )
-                      : null,
                 ),
 
               // Gradient overlay for text readability
@@ -171,7 +120,7 @@ class _TagPreviewCard extends StatelessWidget {
                   children: [
                     // Black outline/stroke
                     Text(
-                      tag.label.toUpperCase(),
+                      tag.tagName.toUpperCase(),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,
@@ -184,7 +133,7 @@ class _TagPreviewCard extends StatelessWidget {
                     ),
                     // White text
                     Text(
-                      tag.label.toUpperCase(),
+                      tag.tagName.toUpperCase(),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 18,

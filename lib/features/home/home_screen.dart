@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/constants.dart';
 import '../../theme/my_colors.dart';
+import '../../shared/widgets/expandable_logo_fab.dart';
+import '../../core/providers/promoted_tags_provider.dart';
 import '../image_detail/image_detail_screen.dart';
 import 'home_provider.dart';
 import 'widgets/tag_chip_grid.dart';
@@ -41,46 +42,6 @@ class HomeScreen extends ConsumerWidget {
                     selectedTags: state.selectedTags,
                     onRemoveTag: notifier.removeTag,
                   ),
-
-                  // App logo and title (hidden once search is active)
-                  if (state.status == HomeStatus.idle) ...[
-                    const SizedBox(height: 20),
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/AnimePanelLogo.png',
-                            height: 80,
-                            fit: BoxFit.contain,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Anime Panel',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: MyColors.accentOrange,
-                                ),
-                              ),
-                              Text(
-                                'Anime Frames & Manga Panels\nReaction Library',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: colors.onSurfaceVariant,
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -97,6 +58,28 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
+      floatingActionButton: ExpandableLogoFab(
+        onBookmarkTap: () {
+          // TODO: Navigate to bookmarks
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Bookmarks - Coming soon!')),
+          );
+        },
+        onPersonTap: () {
+          // TODO: Navigate to profile
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile - Coming soon!')),
+          );
+        },
+        onKeyboardTap: () {
+          // TODO: Open keyboard shortcuts
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Keyboard shortcuts - Coming soon!')),
+          );
+        },
+      ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniStartDocked,
     );
   }
 
@@ -107,9 +90,35 @@ class HomeScreen extends ConsumerWidget {
   ) {
     switch (state.status) {
       case HomeStatus.idle:
-        return TagChipGrid(
-          tags: AppConstants.suggestedTags,
-          onTagSelected: notifier.applyTag,
+        return Consumer(
+          builder: (context, ref, _) {
+            final promotedTagsAsync = ref.watch(promotedTagsNotifierProvider);
+
+            return promotedTagsAsync.when(
+              data: (tagsMap) {
+                final reactionTags = tagsMap['reactions'] ?? [];
+                return TagChipGrid(
+                  key: const ValueKey('tag_chip_grid'),
+                  tags: reactionTags,
+                  onTagSelected: notifier.applyTag,
+                );
+              },
+              loading: () => Center(
+                child: CircularProgressIndicator(
+                  color: MyColors.accentOrange,
+                ),
+              ),
+              error: (err, stack) {
+                print('[HomeScreen] ERROR loading promoted tags: $err');
+                return Center(
+                  child: Text(
+                    'Failed to load tags',
+                    style: TextStyle(color: MyColors(context).onSurfaceVariant),
+                  ),
+                );
+              },
+            );
+          },
         );
 
       case HomeStatus.loading:

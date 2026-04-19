@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import '../../core/models/panel_image.dart';
 import '../../core/api/anime_panel_api.dart';
 import '../../theme/my_colors.dart';
+import '../../shared/widgets/expandable_logo_fab.dart';
+import '../home/home_provider.dart';
 
 class ImageDetailScreen extends ConsumerStatefulWidget {
   final PanelImage image;
@@ -205,24 +207,35 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: _image.tags.map((tag) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: MyColors.darkBlue,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: MyColors.accentOrange.withOpacity(0.3),
-                              width: 1,
+                        return GestureDetector(
+                          onTap: () {
+                            // Convert tag to slug format (lowercase, spaces to hyphens)
+                            final slug = tag.toLowerCase().replaceAll(' ', '-');
+                            // Navigate back and apply tag
+                            Navigator.of(context).pop();
+                            ref
+                                .read(homeNotifierProvider.notifier)
+                                .applyTag(slug);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
                             ),
-                          ),
-                          child: Text(
-                            tag,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: colors.displayColor,
+                            decoration: BoxDecoration(
+                              color: MyColors.darkBlue,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: MyColors.accentOrange.withOpacity(0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              tag,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: colors.displayColor,
+                              ),
                             ),
                           ),
                         );
@@ -267,6 +280,28 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
           ),
         ),
       ),
+      floatingActionButton: ExpandableLogoFab(
+        onBookmarkTap: () {
+          // TODO: Bookmark this image
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Bookmarked!')),
+          );
+        },
+        onPersonTap: () {
+          // TODO: Share to profile or view uploader
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile - Coming soon!')),
+          );
+        },
+        onKeyboardTap: () {
+          // TODO: Quick actions
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Quick actions - Coming soon!')),
+          );
+        },
+      ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniStartDocked,
     );
   }
 
