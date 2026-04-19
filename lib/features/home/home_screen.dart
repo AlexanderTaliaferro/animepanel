@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/my_colors.dart';
-import '../../shared/widgets/expandable_logo_fab.dart';
+import '../../shared/widgets/app_floating_action_button.dart';
 import '../../core/providers/promoted_tags_provider.dart';
 import '../image_detail/image_detail_screen.dart';
 import 'home_provider.dart';
@@ -58,26 +58,7 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: ExpandableLogoFab(
-        onBookmarkTap: () {
-          // TODO: Navigate to bookmarks
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Bookmarks - Coming soon!')),
-          );
-        },
-        onPersonTap: () {
-          // TODO: Navigate to profile
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile - Coming soon!')),
-          );
-        },
-        onKeyboardTap: () {
-          // TODO: Open keyboard shortcuts
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Keyboard shortcuts - Coming soon!')),
-          );
-        },
-      ),
+      floatingActionButton: const AppFloatingActionButton(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniStartDocked,
     );

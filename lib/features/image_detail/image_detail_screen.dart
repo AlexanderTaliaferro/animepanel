@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../core/models/panel_image.dart';
 import '../../core/api/anime_panel_api.dart';
 import '../../theme/my_colors.dart';
-import '../../shared/widgets/expandable_logo_fab.dart';
+import '../../shared/widgets/app_floating_action_button.dart';
 import '../home/home_provider.dart';
 
 class ImageDetailScreen extends ConsumerStatefulWidget {
@@ -280,26 +280,7 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
           ),
         ),
       ),
-      floatingActionButton: ExpandableLogoFab(
-        onBookmarkTap: () {
-          // TODO: Bookmark this image
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Bookmarked!')),
-          );
-        },
-        onPersonTap: () {
-          // TODO: Share to profile or view uploader
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile - Coming soon!')),
-          );
-        },
-        onKeyboardTap: () {
-          // TODO: Quick actions
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Quick actions - Coming soon!')),
-          );
-        },
-      ),
+      floatingActionButton: const AppFloatingActionButton(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniStartDocked,
     );

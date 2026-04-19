@@ -17,7 +17,7 @@ class PromotedTagsService {
       return snapshot.docs
           .map((doc) => PromotedTag.fromFirestore(doc))
           .toList();
-    } catch (e, stack) {
+    } catch (e) {
       print('[PromotedTagsService] ERROR fetching $category: $e');
       // Return empty list on error
       return [];

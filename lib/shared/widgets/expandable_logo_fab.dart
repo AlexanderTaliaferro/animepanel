@@ -3,13 +3,13 @@ import '../../theme/my_colors.dart';
 
 class ExpandableLogoFab extends StatefulWidget {
   final VoidCallback? onBookmarkTap;
-  final VoidCallback? onPersonTap;
+  final VoidCallback? onUploadTap;
   final VoidCallback? onKeyboardTap;
 
   const ExpandableLogoFab({
     super.key,
     this.onBookmarkTap,
-    this.onPersonTap,
+    this.onUploadTap,
     this.onKeyboardTap,
   });
 
@@ -90,8 +90,8 @@ class _ExpandableLogoFabState extends State<ExpandableLogoFab>
         offset: 140,
       ),
       _ActionButton(
-        icon: Icons.person,
-        onTap: widget.onPersonTap,
+        icon: Icons.upload,
+        onTap: widget.onUploadTap,
         offset: 210,
       ),
       _ActionButton(
