@@ -29,10 +29,11 @@ class MyColors {
   late Color shadow = _shadow();
 
   // Static anime/manga theme colors
-  static Color darkBlue = const Color(0xFF0A1628); // Dark blue panels
+  static Color darkBlue =
+      const Color.fromARGB(255, 16, 35, 64); // Dark blue panels
   static Color accentOrange = const Color(0xFFFF9500); // Orange highlights
   static Color accentBlue =
-      const Color.fromARGB(255, 75, 189, 212); // Light blue text/icons
+      const Color.fromARGB(255, 116, 181, 216); // Light blue text/icons
   static Color pureBlack = const Color(0xFF000000); // Black background
 
   // Base theme getters

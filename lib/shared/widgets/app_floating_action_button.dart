@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/upload/upload_screen.dart';
+import '../../features/saved_images/saved_images_screen.dart';
 import 'expandable_logo_fab.dart';
 
 /// Application-wide floating action button with navigation logic
@@ -9,7 +10,7 @@ class AppFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpandableLogoFab(
-      onBookmarkTap: () => _showComingSoon(context, 'Bookmarks'),
+      onBookmarkTap: () => _navigateToSavedImages(context),
       onUploadTap: () => _navigateToUpload(context),
       onKeyboardTap: () => _showComingSoon(context, 'Keyboard shortcuts'),
     );
@@ -19,6 +20,14 @@ class AppFloatingActionButton extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const UploadScreen(),
+      ),
+    );
+  }
+
+  void _navigateToSavedImages(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const SavedImagesScreen(),
       ),
     );
   }

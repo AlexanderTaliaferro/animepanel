@@ -138,7 +138,7 @@ class _ActionButton extends StatelessWidget {
         width: 56,
         height: 56,
         decoration: BoxDecoration(
-          color: MyColors.darkBlue,
+          color: MyColors.darkBlue.withAlpha(150),
           shape: BoxShape.circle,
           border: Border.all(
             color: MyColors.accentOrange,
@@ -147,7 +147,7 @@ class _ActionButton extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: MyColors.accentOrange.withGreen(100),
+          color: MyColors.accentOrange,
           size: 28,
         ),
       ),

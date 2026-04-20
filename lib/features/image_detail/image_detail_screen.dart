@@ -6,7 +6,9 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import '../../core/models/panel_image.dart';
+import '../../core/models/saved_image.dart';
 import '../../core/api/anime_panel_api.dart';
+import '../../core/providers/saved_images_provider.dart';
 import '../../theme/my_colors.dart';
 import '../../shared/widgets/app_floating_action_button.dart';
 import '../home/home_provider.dart';
@@ -29,6 +31,40 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
   void initState() {
     super.initState();
     _image = widget.image;
+  }
+
+  Future<void> _toggleSave() async {
+    final notifier = ref.read(savedImagesProvider.notifier);
+    final isSaved = notifier.isSaved(_image.id);
+
+    if (isSaved) {
+      await notifier.removeSavedImage(_image.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Removed from saved'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+    } else {
+      final savedImage = SavedImage.fromPanelImage(
+        _image.id,
+        _image.imageUrl,
+        _image.thumbnailUrl,
+        _image.sourceTitle,
+        _image.tags,
+      );
+      await notifier.saveImage(savedImage);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Saved!'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _handleCopy() async {
@@ -154,30 +190,71 @@ class _ImageDetailScreenState extends ConsumerState<ImageDetailScreen> {
 
                 const SizedBox(height: 16),
 
-                // Copy button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _handleCopy,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          _copied ? Colors.green : MyColors.accentOrange,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                // Action buttons (Copy and Save)
+                Row(
+                  children: [
+                    // Copy button
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton.icon(
+                        onPressed: _handleCopy,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _copied ? Colors.green : MyColors.accentOrange,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: Icon(_copied ? Icons.check_circle : Icons.copy,
+                            size: 20),
+                        label: Text(
+                          _copied ? 'Copied!' : 'Copy',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                    icon: Icon(_copied ? Icons.check_circle : Icons.copy,
-                        size: 20),
-                    label: Text(
-                      _copied ? 'Copied to clipboard!' : 'Copy Image',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(width: 12),
+                    // Save button
+                    Expanded(
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final isSaved = ref
+                              .watch(savedImagesProvider.notifier)
+                              .isSaved(_image.id);
+                          return ElevatedButton(
+                            onPressed: _toggleSave,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSaved
+                                  ? MyColors.accentOrange.withOpacity(0.2)
+                                  : MyColors.darkBlue,
+                              foregroundColor: isSaved
+                                  ? MyColors.accentOrange
+                                  : colors.onSurface,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(
+                                color: isSaved
+                                    ? MyColors.accentOrange
+                                    : colors.surfaceContainerHigh,
+                                width: 1,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Icon(
+                              isSaved ? Icons.bookmark : Icons.bookmark_border,
+                              size: 22,
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  ),
+                  ],
                 ),
 
                 const SizedBox(height: 24),

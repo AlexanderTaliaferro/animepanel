@@ -1,15 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'firebase_options.dart';
 import 'features/home/home_screen.dart';
+import 'core/services/saved_images_service.dart';
+import 'core/providers/saved_images_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const ProviderScope(child: PanelReactApp()));
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Initialize SavedImagesService
+  final savedImagesService = SavedImagesService();
+  await savedImagesService.init();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        savedImagesServiceProvider.overrideWithValue(savedImagesService),
+      ],
+      child: const PanelReactApp(),
+    ),
+  );
 }
 
 class PanelReactApp extends StatelessWidget {
