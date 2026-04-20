@@ -5,7 +5,7 @@ import '../services/promoted_tags_service.dart';
 part 'promoted_tags_provider.g.dart';
 
 /// Categories to fetch from Firestore
-const _categories = ['reactions', 'moods', 'sources', 'themes'];
+const _categories = ['reactions', 'moods', 'themes'];
 
 @Riverpod(keepAlive: true)
 class PromotedTagsNotifier extends _$PromotedTagsNotifier {

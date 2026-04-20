@@ -23,14 +23,6 @@ class TagChipGrid extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Popular reactions',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: colors.onSurfaceVariant,
-            ),
-          ),
           const SizedBox(height: 12),
           GridView.builder(
             shrinkWrap: true,

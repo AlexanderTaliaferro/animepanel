@@ -11,7 +11,7 @@ class PromotedTagsService {
           .collection('tags')
           .doc('promoted_tags')
           .collection(category)
-          .orderBy('priority', descending: true)
+          .orderBy('priority', descending: false)
           .get();
 
       return snapshot.docs

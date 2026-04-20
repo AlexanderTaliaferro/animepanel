@@ -9,6 +9,7 @@ import 'widgets/tag_chip_grid.dart';
 import 'widgets/panel_grid.dart';
 import 'widgets/search_bar_widget.dart';
 import 'widgets/selected_tags_widget.dart';
+import 'widgets/category_selector.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -84,14 +85,27 @@ class HomeScreen extends ConsumerWidget {
         return Consumer(
           builder: (context, ref, _) {
             final promotedTagsAsync = ref.watch(promotedTagsNotifierProvider);
+            final selectedCategory = ref.watch(selectedCategoryProvider);
 
             return promotedTagsAsync.when(
               data: (tagsMap) {
-                final reactionTags = tagsMap['reactions'] ?? [];
-                return TagChipGrid(
-                  key: const ValueKey('tag_chip_grid'),
-                  tags: reactionTags,
-                  onTagSelected: notifier.applyTag,
+                final categoryTags = tagsMap[selectedCategory] ?? [];
+                return Column(
+                  key: ValueKey('idle_content_$selectedCategory'),
+                  children: [
+                    // Category selector
+                    const CategorySelector(),
+
+                    const SizedBox(height: 8),
+
+                    // Tag grid
+                    Expanded(
+                      child: TagChipGrid(
+                        tags: categoryTags,
+                        onTagSelected: notifier.applyTag,
+                      ),
+                    ),
+                  ],
                 );
               },
               loading: () => Center(
