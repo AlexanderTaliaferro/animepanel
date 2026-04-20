@@ -7,12 +7,14 @@ class ExpandableLogoFab extends ConsumerStatefulWidget {
   final VoidCallback? onBookmarkTap;
   final VoidCallback? onUploadTap;
   final VoidCallback? onKeyboardTap;
+  final VoidCallback? onDoubleTap;
 
   const ExpandableLogoFab({
     super.key,
     this.onBookmarkTap,
     this.onUploadTap,
     this.onKeyboardTap,
+    this.onDoubleTap,
   });
 
   @override
@@ -82,6 +84,7 @@ class _ExpandableLogoFabState extends ConsumerState<ExpandableLogoFab>
             left: 0,
             child: GestureDetector(
               onTap: _toggle,
+              onDoubleTap: widget.onDoubleTap,
               child: AnimatedBuilder(
                 animation: _expandAnimation,
                 builder: (context, child) {
