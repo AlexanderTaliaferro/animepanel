@@ -98,6 +98,28 @@ class HomeNotifier extends _$HomeNotifier {
     }
   }
 
+  /// Removes the last selected tag
+  void removeLastTag() {
+    if (state.selectedTags.isEmpty) return;
+
+    _debounce?.cancel();
+
+    final updatedTags =
+        state.selectedTags.sublist(0, state.selectedTags.length - 1);
+
+    if (updatedTags.isEmpty) {
+      state = const HomeState();
+    } else {
+      final combinedQuery = updatedTags.join(' ');
+      state = state.copyWith(
+        status: HomeStatus.loading,
+        selectedTags: updatedTags,
+        query: combinedQuery,
+      );
+      _search(combinedQuery);
+    }
+  }
+
   Future<void> _search(String query) async {
     try {
       final results = await AnimePanelApi.instance.search(query);

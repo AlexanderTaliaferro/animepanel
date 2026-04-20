@@ -21,41 +21,51 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Header ──────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Search bar
-                  SearchBarWidget(
-                    initialValue: state.query,
-                    onChanged: notifier.onQueryChanged,
-                    onClear: notifier.clear,
-                  ),
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          // Swipe right detected (positive velocity)
+          if (details.primaryVelocity != null && details.primaryVelocity! > 0) {
+            if (state.selectedTags.isNotEmpty) {
+              notifier.removeLastTag();
+            }
+          }
+        },
+        child: SafeArea(
+          child: Column(
+            children: [
+              // ── Header ──────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Search bar
+                    SearchBarWidget(
+                      initialValue: state.query,
+                      onChanged: notifier.onQueryChanged,
+                      onClear: notifier.clear,
+                    ),
 
-                  // Selected tags
-                  SelectedTagsWidget(
-                    selectedTags: state.selectedTags,
-                    onRemoveTag: notifier.removeTag,
-                  ),
-                ],
+                    // Selected tags
+                    SelectedTagsWidget(
+                      selectedTags: state.selectedTags,
+                      onRemoveTag: notifier.removeTag,
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
 
-            // ── Main content ─────────────────────────────────
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: _buildContent(context, state, notifier),
+              // ── Main content ─────────────────────────────────
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: _buildContent(context, state, notifier),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: const AppFloatingActionButton(),

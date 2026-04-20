@@ -13,10 +13,10 @@ class PanelGrid extends StatelessWidget {
     return GridView.builder(
       padding: const EdgeInsets.all(8),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 6,
-        mainAxisSpacing: 6,
-        childAspectRatio: 0.85,
+        crossAxisCount: 2,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 0.75,
       ),
       itemCount: images.length,
       itemBuilder: (context, index) => PanelCard(
