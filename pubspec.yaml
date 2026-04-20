@@ -103,7 +103,7 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/AnimePanelLogo.png"
+  image_path: "assets/images/AnimePanelLogoBlack.png"
   remove_alpha_ios: true
   adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: "assets/images/AnimePanelLogo.png"
+  adaptive_icon_foreground: "assets/images/AnimePanelLogoBlack.png"

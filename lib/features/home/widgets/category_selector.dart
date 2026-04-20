@@ -8,90 +8,87 @@ final selectedCategoryProvider = StateProvider<String>((ref) => 'reactions');
 class CategorySelector extends ConsumerWidget {
   const CategorySelector({super.key});
 
+  // Map category keys to display names
+  static const _categoryLabels = {
+    'reactions': 'Reactions',
+    'themes': 'Themes',
+    'moods': 'Moods',
+  };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final colors = MyColors(context);
 
+    // Get other categories (not selected)
+    final otherCategories =
+        _categoryLabels.keys.where((cat) => cat != selectedCategory).toList();
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _CategoryButton(
-            label: 'Themes',
-            category: 'themes',
-            isSelected: selectedCategory == 'themes',
-            onTap: () =>
-                ref.read(selectedCategoryProvider.notifier).state = 'themes',
-            colors: colors,
+          // Current selection - large
+          Text(
+            "Popular ${_categoryLabels[selectedCategory]}",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: MyColors.accentOrange,
+            ),
           ),
-          const SizedBox(width: 12),
-          _CategoryButton(
-            label: 'Reactions',
-            category: 'reactions',
-            isSelected: selectedCategory == 'reactions',
-            onTap: () =>
-                ref.read(selectedCategoryProvider.notifier).state = 'reactions',
-            colors: colors,
-          ),
-          const SizedBox(width: 12),
-          _CategoryButton(
-            label: 'Moods',
-            category: 'moods',
-            isSelected: selectedCategory == 'moods',
-            onTap: () =>
-                ref.read(selectedCategoryProvider.notifier).state = 'moods',
-            colors: colors,
+
+          const SizedBox(height: 4),
+
+          // Alternative options - smaller links
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Or try: ',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              ...otherCategories.map((category) {
+                final isLast = category == otherCategories.last;
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () => ref
+                          .read(selectedCategoryProvider.notifier)
+                          .state = category,
+                      child: Text(
+                        _categoryLabels[category]!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: MyColors.accentOrange.withOpacity(0.8),
+                          decoration: TextDecoration.underline,
+                          decorationColor:
+                              MyColors.accentOrange.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                    if (!isLast)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Text(
+                          '·',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              }).toList(),
+            ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CategoryButton extends StatelessWidget {
-  final String label;
-  final String category;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final MyColors colors;
-
-  const _CategoryButton({
-    required this.label,
-    required this.category,
-    required this.isSelected,
-    required this.onTap,
-    required this.colors,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? MyColors.accentOrange : MyColors.darkBlue,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected
-                  ? MyColors.accentOrange
-                  : MyColors.accentOrange.withOpacity(0.3),
-              width: isSelected ? 2 : 1,
-            ),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              color: isSelected ? Colors.white : colors.onSurfaceVariant,
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -45,20 +45,54 @@ class _TagManagerState extends State<TagManager> {
   Future<void> _loadTags() async {
     try {
       final tags = await AnimePanelApi.instance.getTags();
-      setState(() => _allTags = tags);
+      setState(() => _allTags = List.from(tags));
     } catch (e) {
       setState(() => _error = 'Failed to load tags: $e');
     }
   }
 
   List<Tag> get _filteredTags {
-    if (_searchQuery.trim().isEmpty) return _allTags;
+    // When search is empty, only show selected tags
+    if (_searchQuery.trim().isEmpty) {
+      return _allTags
+          .where((tag) => _selectedTagSlugs.contains(tag.slug))
+          .toList();
+    }
+
     final query = _searchQuery.toLowerCase();
-    return _allTags
+
+    // Get tags matching the search
+    final matchingTags = _allTags
         .where((tag) =>
             tag.name.toLowerCase().contains(query) ||
             tag.category.toLowerCase().contains(query))
         .toList();
+
+    // Also include selected tags even if they don't match the search
+    final selectedTags =
+        _allTags.where((tag) => _selectedTagSlugs.contains(tag.slug)).toList();
+
+    // Combine and deduplicate - selected tags first, then matching tags
+    final seen = <String>{};
+    final result = <Tag>[];
+
+    // Add selected tags first
+    for (final tag in selectedTags) {
+      if (!seen.contains(tag.slug)) {
+        result.add(tag);
+        seen.add(tag.slug);
+      }
+    }
+
+    // Add matching tags
+    for (final tag in matchingTags) {
+      if (!seen.contains(tag.slug)) {
+        result.add(tag);
+        seen.add(tag.slug);
+      }
+    }
+
+    return result;
   }
 
   Tag? get _exactMatch => _allTags
@@ -116,7 +150,7 @@ class _TagManagerState extends State<TagManager> {
       );
 
       setState(() {
-        _allTags.add(tag);
+        _allTags = [..._allTags, tag];
         _selectedTagSlugs.add(tag.slug);
         _newTagName = '';
         _searchQuery = '';
@@ -138,6 +172,8 @@ class _TagManagerState extends State<TagManager> {
   @override
   Widget build(BuildContext context) {
     final colors = MyColors(context);
+    final hasSelectedTags = _selectedTagSlugs.isNotEmpty;
+    final isSearching = _searchQuery.trim().isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -146,8 +182,11 @@ class _TagManagerState extends State<TagManager> {
         _buildSearchBar(colors),
         const SizedBox(height: 12),
 
-        // Content - only show when searching
-        if (_searchQuery.trim().isNotEmpty) ...[
+        // Show selected tags even when not searching
+        if (!isSearching && hasSelectedTags) _buildTagsList(colors),
+
+        // Content - show when searching
+        if (isSearching) ...[
           // Create new tag option
           if (_showCreateOption && !_showNewTagForm) _buildCreateOption(colors),
 
