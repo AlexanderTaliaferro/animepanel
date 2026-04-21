@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../core/api/anime_panel_api.dart';
 import '../../core/models/panel_image.dart';
+import '../../core/models/panels_desu_models.dart';
 
 part 'home_provider.g.dart';
 
@@ -121,15 +122,74 @@ class HomeNotifier extends _$HomeNotifier {
   }
 
   Future<void> _search(String query) async {
+    print('Starting search for: $query');
     try {
+      // Search AnimePanel API first
+      print('Calling AnimePanelApi.instance.search...');
       final results = await AnimePanelApi.instance.search(query);
+      print('Got ${results.length} results from AnimePanel API');
       final images = results.map(PanelImage.fromAnimePanel).toList();
 
-      state = state.copyWith(
-        status: images.isEmpty ? HomeStatus.empty : HomeStatus.results,
-        images: images,
-      );
+      // If we have fewer than 20 results, supplement with PanelsDesu
+      if (images.length < 20) {
+        try {
+          final PanelsDesuResponse panelsDesuResponse =
+              await AnimePanelApi.instance.searchPanelsDesu(query);
+          final mangaMap = panelsDesuResponse.mangaById;
+
+          // Convert PanelsDesu panels to PanelImage
+          final panelsDesuImages = panelsDesuResponse.panels.map((panel) {
+            final manga = mangaMap[panel.mangaId];
+            return PanelImage(
+              id: 'panelsdesu_${panel.id}',
+              imageUrl: panel.imageUrl,
+              thumbnailUrl:
+                  panel.imageUrl, // PanelsDesu doesn't have separate thumbnails
+              sourceTitle: manga?.displayTitle ?? 'Unknown',
+              tags: const [], // PanelsDesu doesn't provide tags
+            );
+          }).toList();
+
+          // Combine results, avoiding duplicates based on imageUrl
+          final seen = <String>{};
+          final combined = <PanelImage>[];
+
+          // Add AnimePanel results first
+          for (final image in images) {
+            if (!seen.contains(image.imageUrl)) {
+              combined.add(image);
+              seen.add(image.imageUrl);
+            }
+          }
+
+          // Add PanelsDesu results
+          for (final image in panelsDesuImages) {
+            if (!seen.contains(image.imageUrl) && combined.length < 30) {
+              combined.add(image);
+              seen.add(image.imageUrl);
+            }
+          }
+
+          state = state.copyWith(
+            status: combined.isEmpty ? HomeStatus.empty : HomeStatus.results,
+            images: combined,
+          );
+        } catch (e) {
+          // If PanelsDesu fails, just use AnimePanel results
+          state = state.copyWith(
+            status: images.isEmpty ? HomeStatus.empty : HomeStatus.results,
+            images: images,
+          );
+        }
+      } else {
+        // We have enough results from AnimePanel
+        state = state.copyWith(
+          status: images.isEmpty ? HomeStatus.empty : HomeStatus.results,
+          images: images,
+        );
+      }
     } catch (e) {
+      print('Search error: $e');
       state = state.copyWith(
         status: HomeStatus.error,
         errorMessage: 'Search failed — check your connection.',

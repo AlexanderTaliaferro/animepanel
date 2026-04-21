@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../models/anime_panel_models.dart';
 import '../models/tag.dart';
+import '../models/panels_desu_models.dart';
 import '../constants.dart';
 
 class AnimePanelApi {
@@ -93,5 +94,24 @@ class AnimePanelApi {
     await _dio.post('/api/images/$imageId/tags', data: {
       'tagSlugs': tagSlugs,
     });
+  }
+
+  // ─── PanelsDesu API ──────────────────────────────────────────────────────────
+
+  /// GET /v1/search?q=<query>&limit=<limit> from PanelsDesu
+  Future<PanelsDesuResponse> searchPanelsDesu(
+    String query, {
+    int limit = 30,
+  }) async {
+    final panelsDesuDio = Dio(BaseOptions(
+      baseUrl: 'https://api.panelsdesu.com',
+    ));
+
+    final res = await panelsDesuDio.get('/v1/search', queryParameters: {
+      'q': query,
+      'limit': limit,
+    });
+
+    return PanelsDesuResponse.fromJson(res.data);
   }
 }
