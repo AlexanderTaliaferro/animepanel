@@ -67,7 +67,7 @@ class KeyboardSetupScreen extends StatelessWidget {
                 number: '1',
                 title: 'Add the keyboard',
                 body:
-                    'Settings → General → Keyboard → Keyboards → Add New Keyboard → Anime Panel',
+                    'Settings → General → Keyboard → Keyboards → Add New Keyboard → Anime React',
               ),
 
               const SizedBox(height: 20),
@@ -78,7 +78,7 @@ class KeyboardSetupScreen extends StatelessWidget {
                 number: '2',
                 title: 'Enable Full Access',
                 body:
-                    'Tap Anime Panel in the keyboards list, then toggle Allow Full Access. This lets the keyboard fetch images.',
+                    'Tap Anime React in the keyboards list, then toggle Allow Full Access. This lets the keyboard fetch images.',
               ),
 
               const SizedBox(height: 20),
@@ -89,7 +89,7 @@ class KeyboardSetupScreen extends StatelessWidget {
                 number: '3',
                 title: 'Switch keyboards',
                 body:
-                    'In any app, hold the 🌐 key or tap it to switch to Anime Panel.',
+                    'In any app, hold the 🌐 key or tap it to switch to Anime React.',
               ),
 
               const SizedBox(height: 20),
